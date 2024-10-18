@@ -1,0 +1,10 @@
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":13657,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"/home/user/myapp/test/widget_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading /home/user/myapp/test/widget_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":1}
+{"count":1,"time":9,"type":"allSuites"}
+/tmp/flutter_tools.TRWZVZ/flutter_test_listener.HUOKZG/listener.dart:19:21: Error: Undefined name 'main'.
+  await Future(test.main);
+                    ^^^^
+{"testID":1,"error":"Failed to load \"/home/user/myapp/test/widget_test.dart\": Compilation failed for testPath=/home/user/myapp/test/widget_test.dart","stackTrace":"","isFailure":false,"type":"error","time":8056}
+{"testID":1,"result":"error","skipped":false,"hidden":false,"type":"testDone","time":8061}
+{"success":false,"type":"done","time":8065}
