@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:card_swiper/card_swiper.dart';
 
 void main() => runApp(PoemSwipeApp());
@@ -108,17 +109,17 @@ class _PoemSwipePageState extends State<PoemSwipePage> {
             "David Brown is a poet who often writes about the night and the cosmos, exploring the mysteries of the universe through his work."),
   ];
 
-  final List<Poem> likedPoems = [];
+  SwiperController swiperController = SwiperController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Swipe Poems'),
+        title: const Text('Swipe Poems'),
         centerTitle: true,
       ),
       body: poems.isEmpty
-          ? Center(
+          ? const Center(
               child: Text(
                 'That is it for today. Come back tomorrow for more poems!',
                 textAlign: TextAlign.center,
@@ -126,32 +127,36 @@ class _PoemSwipePageState extends State<PoemSwipePage> {
               ),
             )
           : Swiper(
+              controller: swiperController,
               itemBuilder: (BuildContext context, int index) {
                 return Dismissible(
-                  key: UniqueKey(),
+                  key: ValueKey(poems[index]),
+                  direction: DismissDirection.horizontal,
                   onDismissed: (direction) {
                     setState(() {
                       if (direction == DismissDirection.endToStart) {
-                        // Swiped left, remove poem
-                        poems.removeAt(index);
+                        // Swiped left, show thumbs down
+                        showAnimatedFeedback(
+                            context, Icons.thumb_down, Colors.red);
                       } else if (direction == DismissDirection.startToEnd) {
-                        // Swiped right, like poem
-                        likedPoems.add(poems[index]);
-                        poems.removeAt(index);
+                        // Swiped right, show thumbs up
+                        showAnimatedFeedback(
+                            context, Icons.thumb_up, Colors.green);
                       }
+                      poems.removeAt(index);
                     });
                   },
                   background: Container(
-                    color: Colors.green,
                     alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Icon(Icons.thumb_up, color: Colors.white),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    color: Colors.green.withOpacity(0.1),
+                    child: const Icon(Icons.thumb_up, color: Colors.green, size: 40),
                   ),
                   secondaryBackground: Container(
-                    color: Colors.red,
                     alignment: Alignment.centerRight,
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Icon(Icons.thumb_down, color: Colors.white),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    color: Colors.red.withOpacity(0.1),
+                    child: const Icon(Icons.thumb_down, color: Colors.red, size: 40),
                   ),
                   child: Card(
                     shape: RoundedRectangleBorder(
@@ -167,29 +172,29 @@ class _PoemSwipePageState extends State<PoemSwipePage> {
                           Text(
                             poems[index].title,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 24.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           Text(
                             poems[index].content,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 20.0,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
-                          SizedBox(height: 24.0),
+                          const SizedBox(height: 24.0),
                           Text(
                             "Poet: ${poems[index].poet}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(height: 8.0),
+                          const SizedBox(height: 8.0),
                           Expanded(
                             child: SingleChildScrollView(
                               child: Text(
@@ -213,5 +218,32 @@ class _PoemSwipePageState extends State<PoemSwipePage> {
               layout: SwiperLayout.STACK,
             ),
     );
+  }
+
+  void showAnimatedFeedback(BuildContext context, IconData icon, Color color) {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).size.height / 2 - 50,
+        left: MediaQuery.of(context).size.width / 2 - 50,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.elasticOut,
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.8),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 50,
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context)?.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 1), () => overlayEntry.remove());
   }
 }
