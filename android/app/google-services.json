@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "299161039572",
+    "project_id": "swipe-poems",
+    "storage_bucket": "swipe-poems.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299161039572:android:14337ee2637b6dc0720141",
+        "android_client_info": {
+          "package_name": "com.swipe.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAv8uHPcB0fSVHGWKQwbL1iA-DFUAK6kvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

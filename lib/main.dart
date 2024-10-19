@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
-void main() => runApp(PoemSwipeApp());
+void main() => runApp(const PoemSwipeApp());
 
 class PoemSwipeApp extends StatelessWidget {
   const PoemSwipeApp({super.key});
@@ -14,7 +14,7 @@ class PoemSwipeApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: PoemSwipePage(),
+      home: const PoemSwipePage(),
     );
   }
 }
