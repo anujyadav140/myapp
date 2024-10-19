@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:card_swiper/card_swiper.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
 void main() => runApp(PoemSwipeApp());
 
 class PoemSwipeApp extends StatelessWidget {
+  const PoemSwipeApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,6 +33,8 @@ class Poem {
 }
 
 class PoemSwipePage extends StatefulWidget {
+  const PoemSwipePage({super.key});
+
   @override
   _PoemSwipePageState createState() => _PoemSwipePageState();
 }
@@ -109,8 +113,6 @@ class _PoemSwipePageState extends State<PoemSwipePage> {
             "David Brown is a poet who often writes about the night and the cosmos, exploring the mysteries of the universe through his work."),
   ];
 
-  SwiperController swiperController = SwiperController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,98 +128,49 @@ class _PoemSwipePageState extends State<PoemSwipePage> {
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
             )
-          : Swiper(
-              controller: swiperController,
-              itemBuilder: (BuildContext context, int index) {
-                return Dismissible(
-                  key: ValueKey(poems[index]),
-                  direction: DismissDirection.horizontal,
-                  onDismissed: (direction) {
-                    setState(() {
-                      if (direction == DismissDirection.endToStart) {
-                        // Swiped left, show thumbs down
-                        showAnimatedFeedback(
-                            context, Icons.thumb_down, Colors.red);
-                      } else if (direction == DismissDirection.startToEnd) {
-                        // Swiped right, show thumbs up
-                        showAnimatedFeedback(
-                            context, Icons.thumb_up, Colors.green);
-                      }
-                      poems.removeAt(index);
-                    });
-                  },
-                  background: Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    color: Colors.green.withOpacity(0.1),
-                    child: const Icon(Icons.thumb_up, color: Colors.green, size: 40),
-                  ),
-                  secondaryBackground: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    color: Colors.red.withOpacity(0.1),
-                    child: const Icon(Icons.thumb_down, color: Colors.red, size: 40),
-                  ),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    elevation: 4.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            poems[index].title,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16.0),
-                          Text(
-                            poems[index].content,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 20.0,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          const SizedBox(height: 24.0),
-                          Text(
-                            "Poet: ${poems[index].poet}",
-                            style: const TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Text(
-                                poems[index].details,
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-              itemCount: poems.length,
-              itemWidth: MediaQuery.of(context).size.width * 0.9,
-              itemHeight: MediaQuery.of(context).size.height * 0.75,
-              layout: SwiperLayout.STACK,
+          : CardSwiper(
+              cardsCount: poems.length,
+              allowedSwipeDirection: const AllowedSwipeDirection.symmetric(
+                horizontal: true,
+                vertical: false,
+              ),
+              cardBuilder:
+                  (context, index, percentThresholdX, percentThresholdY) =>
+                      Container(
+                alignment: Alignment.center,
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Container(child: Text(poems[index].title)),
+                    Container(child: Text(poems[index].content)),
+                    Container(child: Text(poems[index].poet)),
+                    Container(child: Text(poems[index].details)),
+                  ],
+                ),
+              ),
+              onSwipe: _onSwipe,
             ),
     );
+  }
+
+  bool _onSwipe(
+    int previousIndex,
+    int? currentIndex,
+    CardSwiperDirection direction,
+  ) {
+    debugPrint(
+      'The card $previousIndex was swiped to the ${direction.name}. Now the card $currentIndex is on top',
+    );
+    if (direction == CardSwiperDirection.right) {
+      showAnimatedFeedback(context, Icons.thumb_up_sharp, Colors.green);
+      setState(() {});
+    } else if (direction == CardSwiperDirection.left) {
+      showAnimatedFeedback(context, Icons.thumb_down_sharp, Colors.red);
+      setState(() {
+        poems.removeAt(previousIndex);
+      });
+    }
+    return true;
   }
 
   void showAnimatedFeedback(BuildContext context, IconData icon, Color color) {
@@ -243,7 +196,7 @@ class _PoemSwipePageState extends State<PoemSwipePage> {
       ),
     );
 
-    Overlay.of(context)?.insert(overlayEntry);
+    Overlay.of(context).insert(overlayEntry);
     Future.delayed(const Duration(seconds: 1), () => overlayEntry.remove());
   }
 }
